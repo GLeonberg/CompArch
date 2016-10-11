@@ -1,6 +1,6 @@
 .data
 	prompt: .asciiz "Please enter an integer (<= 100)\n"
-	answer: "The answer is: "
+	answer: .asciiz "The answer is: "
 	invalid: .asciiz "Invalid input! Exiting Program!\n"
 	none: .asciiz "No answers exist (but input was techinally valid)!"
 

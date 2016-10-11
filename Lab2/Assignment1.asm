@@ -1,9 +1,11 @@
-.data
+.data 0x10000000
+
 	prompt: .asciiz "Please enter a non-negative integer\n"
-	answer: "The answer is: "
+	answer: .asciiz "The answer is: "
 	invalid: .asciiz "Invalid input! Exiting Program!\n"
 
-.text
+.text 0x00400000
+.globl main
 
 j main
 inv:
