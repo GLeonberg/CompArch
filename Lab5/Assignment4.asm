@@ -1,4 +1,6 @@
-# Gregory Leonberg.data 0x10000800
+# Gregory Leonberg
+
+.data 0x10000800
 	OrinRow_0: .word 1,2,3,4,5,6
 	OrinRow_1: .word 7,8,9,10,11,12
 	OrinRow_2: .word 13,14,15,16,17,18
