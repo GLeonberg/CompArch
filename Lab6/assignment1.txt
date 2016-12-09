@@ -1,0 +1,65 @@
+--------------------------------------------------------------
+# MIPS
+# Gregory Leonberg
+
+lw $2, 0($1) # load a into r2
+lw $3, 4($1) # load b into r3
+lw $4, 8($1) # load c into r4
+lw $5, 12($1) # load d into r5
+add $6, 16, $1 # load base address of E into r6
+add $7, $zero, $zero
+
+loop:
+	beqi $7, 10, endLoop # exit condition
+
+	# multiply i by 4 and add to base address of e array
+	mul $8, $7, 4 
+	add $8, $8, $6
+
+	bgt $2, $3, cont
+		sub $2, $2, $5
+		j cont
+
+	add $2, $2, $4
+	
+	cont:	
+		sw $2, 0($8) # store result in array
+		addi $7, $7, 1 # increment counter
+		j loop
+
+endLoop:
+
+--------------------------------------------------------------
+# PTX
+# Gregory Leonberg
+
+ld.global.b32 r2, [r1 + 0] # load a into r2
+ld.global.b32 r3, [r1 + 4] # load b into r3
+ld.global.b32 r4, [r1 + 8] # load c into r4
+ld.global.b32 r5, [r1 + 12] # load d into r5
+add.s32 r6, r1, 16 # load base address of E into r6
+add.s32 r7, 0, 0 # initialize i to 0
+
+loop:
+	setp.eq.s32 r9, r7, 10
+	@r9 bra endLoop
+
+	# multiply i by 4 and add to base address of e array
+	mul.s32 r8, r7, 4
+	add.s32 r8, r8, r6
+
+	setp.gt.s32 r9, r2, r3
+	@r9 bra cont
+	sub.s32 r2, r2, r5
+	bra cont
+
+	add.s32 r2, r2, r4
+
+	cont:
+		st.global.b32 r2, [r8 + 0]
+		add.s32 r7, r7, 1
+		bra loop
+
+endLoop:
+
+--------------------------------------------------------------	

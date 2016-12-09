@@ -1,0 +1,81 @@
+---------------------------------------------------------------
+
+# MIPS
+# Gregory Leonberg
+
+li $2, 0 # zero out neg
+li $3, 0 # zero out pos
+li $4, 0 # zero out neg_sum
+li $5, 0 # zero out pos_sum
+li $6, 0 # zero out neg_mean
+li $7, 0 # zero out pos_mean
+li $8, 0 # zero out i
+
+loop:
+	beqi $8, 10, endLoop
+
+	# store x[i] in $10
+	mul $9, $8, 4
+	add $9, $9, $1
+	lw $10, 0($9)
+
+	bgt $10, $zero, pos
+	add $2, $2, 1
+	add $4, $4, $10
+	j cont
+	
+	pos:
+		add $3, $3, 1
+		add $5, $5, $10
+
+	cont:
+
+		addi $8, $8, 1
+		j loop
+
+endLoop:
+
+	div $6, $4, $2
+	div $7, $5, $3
+
+---------------------------------------------------------------
+
+# PTX
+# Gregory Leonberg
+
+add.s32 r2, 0, 0
+add.s32 r3, 0, 0
+add.s32 r4, 0, 0
+add.s32 r5, 0, 0
+add.s32 r6, 0, 0
+add.s32 r7, 0, 0
+add.s32 r8, 0, 0
+
+loop:
+	setp.eq.s32 r11, r8, 10
+	@r11 bra endLoop
+
+	mul.s32 r9, r8, 4
+	add.s32 r9, r9, r1
+	ld.global.b16 r10, [r9 + 0]
+	cvt.s32.s16 r10, r10
+
+	setp.gt.s32 r11, r10, 0
+	@r11 bra pos
+	add.s32 r2, r2, 1
+	add.s32 r4, r4, r10
+	bra cont
+
+	pos:
+		add.s32 r3, r3, 1
+		add.s32 r5, r5, r10
+
+	cont:
+		add.s32 r8, r8, 1
+		bra loop
+
+endLoop:
+	div.s32 r6, r4, r2
+	div.s32 r7, r5, r3
+
+---------------------------------------------------------------

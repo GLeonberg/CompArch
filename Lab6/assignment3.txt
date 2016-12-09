@@ -1,0 +1,86 @@
+--------------------------------------------------------------
+
+# MIPS
+# Gregory Leonberg
+
+# initialize k to zero
+li $t4, 0
+
+# read user input n into $t0
+li $v0, 5
+syscall
+add $t0, $v0, $zero
+
+# store initial values and move them into floating cpu
+li $t1, 1
+li $t2, 2
+mtc1 $t1, $f1
+cvt.s.w $f1, $f1
+
+loop:
+	beq  $t4, $t0, endLoop # exit when k = n
+
+	# calculate 2^k and store in $t3
+	sllv $t3, $t2, $t4
+
+	# move 2^k into $f3
+	mtc1 $t3, $f3
+	cvt.s.w $f3, $f3
+	
+	# calculate 1/2^k and store in $f4
+	div.s $f4, $f1, $f3 
+
+	# add to running sum in $f12
+	add.s $f12, $f12, $f4
+
+	# increment k and repeat loop
+	addi $t4, $t4, 1
+	j loop
+endLoop:
+	add.s $f12, $f12, $f1
+	# print answer as float
+	li $v0, 2
+	syscall
+
+-------------------------------------------------------------
+
+# PTX
+# Gregory Leonberg
+
+# initialize k to zero
+add.s32 r4, 0, 0
+
+# initalize answer to zero
+add.f32 r12, 0, 0
+
+# assume user input n in r1 as s32
+
+# store initial values
+add.s32 r2, 0, 1
+add.s32 r3, 0, 2
+
+loop:
+
+	# exit when k = n
+	setp.eq.s32 r5, r4, r1
+	@r5 bra endLoop
+
+	# calculate 1/2^k, store in r6
+	shl r6, r3, r4
+	cvt.s32.f32 r6, r6
+	div.f32 r6, 1, r6
+
+	# add to running sum in r12
+	add.f32 r12, r12, r6
+
+	# increment k and repeat loop
+	add.s32 r4, r4, 1
+	bra loop
+
+endLoop:
+
+	add.f32 r12, r12, 1
+
+	# assume value in r12 is printed to user
+
+---------------------------------------------------------------
